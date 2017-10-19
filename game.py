@@ -244,6 +244,14 @@ def execute_go(direction):
     else:
         print ("You cannot go there.")
 
+#def check_for_weight(mass):
+	#length = len(inventory)
+	#for x in inventory[x]['mass']:
+		#item_mass = int(float(inventory[x]['mass']))
+		#mass = mass + item_mass
+		#if mass > 3:
+			#print("You can't pick up more items")
+			#break
 
 def execute_take(item_id):
     """This function takes an item_id as an argument and moves this item from the
@@ -255,15 +263,17 @@ def execute_take(item_id):
     length = len(current_room['items'])
     if length == 1:
         if item_id == current_room['items'][0]['id']:
-            inventory.append(current_room['items'][0])
-            current_room['items'].remove(current_room['items'][0])
-            temp = True
+        	#check_for_weight(int(float(item_id[0]['mass'])))
+        	inventory.append(current_room['items'][0])
+        	current_room['items'].remove(current_room['items'][0])
+        	temp = True
     else:
-        for x in range (0,length-1):
+        for x in range (0,length - 1):
             if item_id == current_room['items'][x]['id']:
-                inventory.append(current_room['items'][x])
-                current_room['items'].remove(current_room['items'][x])
-                temp = True
+            	#check_for_weight(int(float(item_id[x]['mass'])))
+            	inventory.append(current_room['items'][x])
+            	current_room['items'].remove(current_room['items'][x])
+            	temp = True
 
     if temp == False:
         print ("You cannot take that.")
@@ -276,11 +286,17 @@ def execute_drop(item_id):
     """
     temp = False
     length = len(inventory)
-    for x in range (0,length):
-        if item_id == inventory[x]['id']:
-            current_room['items'].append(inventory[x])
-            inventory.remove(inventory[x])
-            temp = True
+    if length == 1:
+    	if item_id == inventory[0]['id']:
+    		current_room['items'].append(inventory[0])
+    		inventory.remove(inventory[0])
+    		temp = True
+    else:
+    	for x in range(0,length - 1):
+    		if item_id == inventory[x]['id']:
+    			current_room['items'].append(inventory[x])
+    			inventory.remove(inventory[x])
+    			temp = True
     if temp == False:
         print("You cannot drop that.")
     
