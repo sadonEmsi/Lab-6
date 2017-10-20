@@ -68,8 +68,13 @@ def print_inventory_items(items):
     <BLANKLINE>
 
     """
-    print ("You have " + list_of_items(items) +".")
-    print ("")
+    global inventory
+    if len(inventory)>=1:
+    	print ("You have " + list_of_items(items) + ".")
+    	print("")
+    else:
+    	print("You have nothing")
+    	print("")
 
 def print_room(room):
     """This function takes a room as an input and nicely displays its name
@@ -244,12 +249,12 @@ def execute_go(direction):
     else:
         print ("You cannot go there.")
 
-def check_for_weight():
+def check_for_weight(item_id):
 	global inventory
 	all_mass = 0.0
 	for ch in inventory:
 		all_mass += ch["mass"]
-	if all_mass > 3.0:
+	if all_mass + item_id >= 3.0:
 		return False
 	else:
 		return True
@@ -263,19 +268,18 @@ def execute_take(item_id):
     global inventory
     global current_room
     picked_up = False
-    length = len(current_room['items'])
 
-    if check_for_weight() == True:
-    	for ch in current_room['items']:
-    		if item_id == (ch['id']):
+    for ch in current_room['items']:
+    	if item_id == (ch['id']):
+    		if check_for_weight(ch['mass']) == True:
     			picked_up = True
     			current_room['items'].remove(ch)
     			inventory.append(ch)
+    		else:
+    			print("You are carrying too many items please drop something.")
 
-    	if picked_up == False:
-        	print ("You cannot take that.")
-    else:
-    	print("You are overloaded. Please drop something.")
+    if picked_up == False:
+        print ("You cannot take that.")
     
 
 def execute_drop(item_id):
@@ -300,6 +304,7 @@ def execute_drop(item_id):
 def win_condition(recep_items):
 	if len(recep_items) == 6:
 		print("Congratulations you won the game!")
+		exit()
 	else:
 		print("You have some items left to drop!")
 
@@ -376,18 +381,18 @@ def move(exits, direction):
 
 # This is the entry point of our program
 def main():
+	print("The win condition of the game is to drop all items in the reception.")
+	# Main game loop
+	while True:
+		# Display game status (room description, inventory etc.)
+		print_room(current_room)
+		print_inventory_items(inventory)
 
-    # Main game loop
-    while True:
-        # Display game status (room description, inventory etc.)
-        print_room(current_room)
-        print_inventory_items(inventory)
+		# Show the menu with possible actions and ask the player
+		command = menu(current_room['exits'], current_room['items'],inventory)
 
-        # Show the menu with possible actions and ask the player
-        command = menu(current_room["exits"], current_room["items"], inventory)
-
-        # Execute the player's command
-        execute_command(command)
+		# Execute the player's command
+		execute_command(command)
 
 
 
