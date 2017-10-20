@@ -254,7 +254,7 @@ def check_for_weight(item_id):
 	all_mass = 0.0
 	for ch in inventory:
 		all_mass += ch["mass"]
-	if all_mass + item_id >= 3.0:
+	if all_mass + item_id > 3.0:
 		return False
 	else:
 		return True
