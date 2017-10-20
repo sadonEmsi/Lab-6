@@ -244,14 +244,15 @@ def execute_go(direction):
     else:
         print ("You cannot go there.")
 
-#def check_for_weight(mass):
-	#length = len(inventory)
-	#for x in inventory[x]['mass']:
-		#item_mass = int(float(inventory[x]['mass']))
-		#mass = mass + item_mass
-		#if mass > 3:
-			#print("You can't pick up more items")
-			#break
+def check_for_weight():
+	global inventory
+	all_mass = 0.0
+	for ch in inventory:
+		all_mass += ch["mass"]
+	if all_mass > 3.0:
+		return False
+	else:
+		return True
 
 def execute_take(item_id):
     """This function takes an item_id as an argument and moves this item from the
@@ -259,24 +260,22 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    temp = False
+    global inventory
+    global current_room
+    picked_up = False
     length = len(current_room['items'])
-    if length == 1:
-        if item_id == current_room['items'][0]['id']:
-        	#check_for_weight(int(float(item_id[0]['mass'])))
-        	inventory.append(current_room['items'][0])
-        	current_room['items'].remove(current_room['items'][0])
-        	temp = True
-    else:
-        for x in range (0,length - 1):
-            if item_id == current_room['items'][x]['id']:
-            	#check_for_weight(int(float(item_id[x]['mass'])))
-            	inventory.append(current_room['items'][x])
-            	current_room['items'].remove(current_room['items'][x])
-            	temp = True
 
-    if temp == False:
-        print ("You cannot take that.")
+    if check_for_weight() == True:
+    	for ch in current_room['items']:
+    		if item_id == (ch['id']):
+    			picked_up = True
+    			current_room['items'].remove(ch)
+    			inventory.append(ch)
+
+    	if picked_up == False:
+        	print ("You cannot take that.")
+    else:
+    	print("You are overloaded. Please drop something.")
     
 
 def execute_drop(item_id):
@@ -284,22 +283,25 @@ def execute_drop(item_id):
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
+    global inventory
+    global current_room
     temp = False
-    length = len(inventory)
-    if length == 1:
-    	if item_id == inventory[0]['id']:
-    		current_room['items'].append(inventory[0])
-    		inventory.remove(inventory[0])
+    for ch in inventory:
+    	if item_id == ch['id']:
     		temp = True
-    else:
-    	for x in range(0,length - 1):
-    		if item_id == inventory[x]['id']:
-    			current_room['items'].append(inventory[x])
-    			inventory.remove(inventory[x])
-    			temp = True
+    		inventory.remove(ch)
+    		current_room['items'].append(ch)
+    		if current_room == rooms['Reception']:
+    			win_condition(current_room['items'])
     if temp == False:
-        print("You cannot drop that.")
-    
+    	print("You cannot drop that.")
+
+
+def win_condition(recep_items):
+	if len(recep_items) == 6:
+		print("Congratulations you won the game!")
+	else:
+		print("You have some items left to drop!")
 
 def execute_command(command):
     """This function takes a command (a list of words as returned by
